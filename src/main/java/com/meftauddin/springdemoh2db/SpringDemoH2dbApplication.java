@@ -1,14 +1,21 @@
 package com.meftauddin.springdemoh2db;
 
 import com.meftauddin.springdemoh2db.ExampleBean;
+import com.meftauddin.springdemoh2db.client.JsonPlaceHolderService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.support.RestClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import com.meftauddin.springdemoh2db.client.JsonPlaceHolderService;
 
 @SpringBootApplication
 // @EnableAutoConfiguration
@@ -32,6 +39,15 @@ public class SpringDemoH2dbApplication {
 		for (String beanName : beans) {
 			System.out.println("Is " + beanName + " in ApplicationContext: " + applicationContext.containsBean(beanName));
 		}
+	}
+
+	@Bean
+	JsonPlaceHolderService jsonPlaceHolderService() {
+		RestClient restClient = RestClient.create("https://jsonplaceholder.typicode.com");
+		HttpServiceProxyFactory factory = HttpServiceProxyFactory
+				.builderFor(RestClientAdapter.create(restClient))
+				.build();
+		return factory.createClient(JsonPlaceHolderService.class);
 	}
 
 }
